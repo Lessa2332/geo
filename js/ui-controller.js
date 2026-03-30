@@ -5,14 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     audioBtn.addEventListener('click', () => {
         video.muted = !video.muted;
-        audioBtn.innerText = video.muted ? "🔊 Звук" : "🔇 Вимкнути";
-        // Важливо: запуск відео після взаємодії користувача
-        video.play();
+        audioBtn.innerText = video.muted ? "🔊 ЗВУК" : "🔇 ВИМКНУТИ";
+        video.play(); // Важливо для iOS/Android
     });
 
     resetBtn.addEventListener('click', () => {
-        if (typeof window.resetHologram === 'function') {
-            window.resetHologram();
-        }
+        window.resetHologram();
     });
 });
