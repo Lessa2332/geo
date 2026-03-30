@@ -6,10 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     audioBtn.addEventListener('click', () => {
         video.muted = !video.muted;
         audioBtn.innerText = video.muted ? "🔊 Звук" : "🔇 Вимкнути";
+        // Важливо: запуск відео після взаємодії користувача
         video.play();
     });
 
     resetBtn.addEventListener('click', () => {
-        if (window.resetHologram) window.resetHologram();
+        if (typeof window.resetHologram === 'function') {
+            window.resetHologram();
+        }
     });
 });
