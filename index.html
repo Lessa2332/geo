@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Зірочки Першокласника</title>
+
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-particle-system-component@1.1.3/dist/aframe-particle-system-component.min.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #FFD700;
+      --secondary-color: #FF69B4;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+    }
+    a-scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #uiContainer {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 12px 16px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px var(--primary-color);
+    }
+    #nameInput {
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: 2px solid var(--secondary-color);
+    }
+    #instruction {
+      font-size: 16px;
+      color: #0A1F44;
+      margin-top: 5px;
+    }
+    #signature {
+      font-size: 14px;
+      color: #0A1F44;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="uiContainer">
+    <input id="nameInput" placeholder="Введи своє ім'я, школярику! 🎉">
+    <div id="instruction">Торкнися зірочки! 🌟</div>
+    <div id="signature">@SmartLessa - 2025</div>
+  </div>
+
+  <a-scene mindar-image="system: image; targets: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.0/examples/image-tracking/assets/card-example/card.mind">
+    <a-assets>
+      <audio id="magicSound" src="magic.mp3" preload="auto"></audio>
+      <a-asset-item id="mozillavr-font" src="https://cdn.aframe.io/fonts/mozillavr.fnt"></a-asset-item>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0">
+      <!-- Текст побажання -->
+      <a-text id="arText" value="" color="#0A1F44" align="center" position="0 0.7 0" width="1.5" opacity="0" font="mozillavr">
+        <a-animation attribute="opacity" from="0" to="1" dur="1200" begin="showText"></a-animation>
+        <a-animation attribute="scale" from="0.5 0.5 0.5" to="1 1 1" dur="800" begin="showText" easing="ease-out-bounce"></a-animation>
+      </a-text>
+
+      <!-- Зірочки (10 штук) -->
+      <a-entity id="stars" position="0 0.5 0">
+        <!-- Кожна зірочка — сфера з унікальним ID та кольором -->
+        <a-sphere id="star0" position="0.3 0.3 0" radius="0.1" color="#FFD700" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="0.3 0.4 0" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star1" position="-0.3 0.3 0" radius="0.1" color="#FF69B4" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="-0.3 0.4 0" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star2" position="0.3 -0.1 0" radius="0.1" color="#00BFFF" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="0.3 0 0" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star3" position="-0.3 -0.1 0" radius="0.1" color="#FF4500" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="-0.3 0 0" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star4" position="0 0.5 0.2" radius="0.1" color="#7CFC00" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="0 0.6 0.2" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star5" position="0 0.5 -0.2" radius="0.1" color="#BA55D3" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="0 0.6 -0.2" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star6" position="0.2 -0.3 0.2" radius="0.1" color="#FF6347" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="0.2 -0.2 0.2" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star7" position="-0.2 -0.3 -0.2" radius="0.1" color="#20B2AA" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="-0.2 -0.2 -0.2" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star8" position="0.4 0 0.2" radius="0.1" color="#FFD700" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="0.4 0.1 0.2" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+        <a-sphere id="star9" position="-0.4 0 -0.2" radius="0.1" color="#FF69B4" opacity="0" cursor="rayOrigin: mouse" class="clickable">
+          <a-animation attribute="opacity" from="0" to="0.9" dur="1000" begin="showStars"></a-animation>
+          <a-animation attribute="position" to="-0.4 0.1 -0.2" dur="1000" repeat="indefinite" dir="alternate" easing="ease-in-out"></a-animation>
+        </a-sphere>
+      </a-entity>
+
+      <!-- Конфетті -->
+      <a-entity id="confetti" particle-system="preset: dust; color: #FFD700,#FF69B4,#00BFFF; particleCount: 100; size: 0.05; velocity: 0 5 0; lifetime: 2; opacity: 1; blending: additive" position="0 0.5 0" opacity="0">
+        <a-animation attribute="opacity" from="0" to="1" dur="500" begin="showConfetti"></a-animation>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const schoolName = "Чорноморський ліцей №6";
+    const wishes = [
+      "Сьогодні твій день для нових друзів!",
+      "Усмішка робить навчання веселішим!",
+      "Кожна буква – крок до нових пригод!",
+      "Ти маленький чарівник у великій школі!",
+      "Кожен день приносить нові ідеї!",
+      "Твоє серце світиться щастям!",
+      "Грай і вчися одночасно – це магія!",
+      "Ти зможеш все, що задумав!",
+      "Усмішка допомагає вчитися легко!",
+      "Кожна книжка – скарб знань!",
+      "Твоя фантазія робить день яскравим!",
+      "Ти чарівник своїх успіхів!",
+      "Завтра буде ще цікавіше!",
+      "Сміливо мрій і відкривай нове!",
+      "Ти робиш цей світ яскравішим!",
+      "Ти станеш зіркою першого класу! 🌟 Вітаю зі школою! 🎉",
+      "Школа — це весела пригода! Будь сміливим, як герой! 🦁",
+      "Нові друзі чекають на тебе! Усміхайся яскраво! 😊",
+      "Ти маленький чарівник, і школа — твоя магія! 🪄",
+      "Кожен день у школі — це нова гра! Грай весело! 🎲",
+      "Твої малюнки та літери — це скарби! 📚✨",
+      "Школа — твій новий дім пригод! Будь супер! 🚀",
+      "Дзвоник дзвенить для тебе! Сьогодні твій день! 🔔",
+      "Ти зробиш уроки веселими, як свято! 🎈",
+      "Мрій і вчися — ти справжня зірочка! 🌈"
+    ];
+
+    const inputName = document.getElementById('nameInput');
+    const arText = document.getElementById('arText');
+    const confetti = document.getElementById('confetti');
+    const sound = document.getElementById('magicSound');
+    const stars = document.querySelectorAll('.clickable');
+    let usedWishes = []; // Відстежуємо використані побажання
+
+    // Показуємо зірочки після завантаження сцени
+    document.querySelector('#stars').emit('showStars');
+
+    // Додаємо обробники кліків для кожної зірочки
+    stars.forEach((star, index) => {
+      star.addEventListener('click', () => {
+        console.log(`Зірочка ${index} натиснута!`);
+        sound.currentTime = 0;
+        sound.play().catch(err => console.error('Помилка звуку:', err));
+
+        const name = inputName.value || "Першокласник";
+        let wishIndex;
+
+        // Вибираємо випадкове невикористане побажання
+        do {
+          wishIndex = Math.floor(Math.random() * wishes.length);
+        } while (usedWishes.includes(wishIndex) && usedWishes.length < wishes.length);
+
+        if (usedWishes.length >= wishes.length) {
+          usedWishes = []; // Скидаємо, якщо всі побажання використані
+        }
+        usedWishes.push(wishIndex);
+
+        const message = `Привіт, ${name}! 🎒\n${wishes[wishIndex]}`;
+        arText.setAttribute('value', message);
+
+        // Запускаємо анімації
+        arText.emit('showText');
+        confetti.emit('showConfetti');
+
+        // Голосове озвучення
+        if ('speechSynthesis' in window) {
+          const voices = speechSynthesis.getVoices();
+          const utterance = new SpeechSynthesisUtterance(message.replace(/\n/g, ' '));
+          utterance.voice = voices.find(voice => voice.name.includes('Child')) || voices[0];
+          utterance.pitch = 1.5;
+          utterance.rate = 1.2;
+          speechSynthesis.speak(utterance);
+        }
+
+        // Ховаємо натиснуту зірочку
+        star.setAttribute('opacity', '0');
+        star.setAttribute('visible', 'false');
+      });
+    });
+  </script>
+</body>
+</html>
