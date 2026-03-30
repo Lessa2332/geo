@@ -1,15 +1,27 @@
 AFRAME.registerShader('transparent-video', {
-  schema: { src: {type: 'map'} },
-
+  schema: {
+    src: {type: 'map'}
+  },
   init: function (data) {
+    // ВАЖЛИВО: Шукаємо саме елемент <video> за його ID в index.html
     const videoEl = document.querySelector('#hologramVideo');
-    if (!videoEl) return;
+    
+    if (!videoEl) {
+      console.error("Критична помилка: Не знайдено відео з ID #hologramVideo!");
+      return;
+    }
 
+    // Реєстрація текстури
     this.texture = new THREE.VideoTexture(videoEl);
     this.texture.format = THREE.RGBAFormat;
+    this.texture.minFilter = THREE.LinearFilter;
+    this.texture.magFilter = THREE.LinearFilter;
     
+    // Створення ShaderMaterial
     this.material = new THREE.ShaderMaterial({
-      uniforms: { texture: {value: this.texture} },
+      uniforms: {
+        texture: {value: this.texture}
+      },
       vertexShader: `
         varying vec2 vUv;
         void main() {
@@ -22,17 +34,22 @@ AFRAME.registerShader('transparent-video', {
         uniform sampler2D texture;
         void main() {
           vec2 uv = vUv;
+          // Ліва частина - Колір (RGB)
           vec4 color = texture2D(texture, vec2(uv.x * 0.5, uv.y));
+          // Права частина - Маска прозорості (Альфа береться з червоного каналу)
           float alpha = texture2D(texture, vec2(0.5 + uv.x * 0.5, uv.y)).r;
           gl_FragColor = vec4(color.rgb, alpha);
         }
       `,
       transparent: true,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide // Лисицю видно з обох боків
     });
   },
   update: function (data) {
-    if (this.texture) this.texture.image = data.src;
+    // Оновлюємо текстуру, якщо відео джерело змінилося
+    if (this.texture) {
+      this.texture.image = data.src;
+    }
   }
 });
 
