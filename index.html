@@ -3,17 +3,17 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta charset="UTF-8">
-    <title>WebAR Hologram Pro | 2026</title>
+    <title>Смарт Лисиця AR | Географія</title>
 
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://raw.githack.com/mrxu0/aframe-transparent-video-shader/master/dist/aframe-transparent-video-shader.umd.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
 
+    <script src="js/components.js"></script>
+
     <style>
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Roboto, sans-serif; background-color: #000; }
-        
-        /* Екран завантаження/інструкції */
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000; }
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #001a1a 0%, #000 100%);
@@ -21,38 +21,31 @@
             justify-content: center; align-items: center; z-index: 1000; 
             text-align: center; transition: opacity 0.5s ease;
         }
-
-        /* Панель кнопок */
         .ui-panel {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 20px; z-index: 1001;
         }
-
         button {
             padding: 14px 28px; border-radius: 30px; border: 1px solid #00ffff;
             background: rgba(0, 255, 255, 0.1); color: #00ffff; font-weight: 600;
             text-transform: uppercase; cursor: pointer; backdrop-filter: blur(10px);
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.3); transition: all 0.2s;
         }
-
-        button:active { transform: scale(0.95); background: #00ffff; color: #000; }
-
         #status-indicator {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            color: #00ffff; font-size: 0.9rem; letter-spacing: 1px;
-            z-index: 1001; text-shadow: 0 0 5px #000;
+            color: #00ffff; font-size: 0.9rem; z-index: 1001; text-shadow: 0 0 5px #000;
         }
     </style>
 </head>
 <body>
 
     <div id="overlay">
-        <h1 style="color: #00ffff; margin-bottom: 10px;">WEB AR HOLOGRAM</h1>
-        <p style="margin-bottom: 30px; line-height: 1.5;">Надайте доступ до камери та<br>наведіть на маркер для появи фігури.</p>
+        <h1 style="color: #00ffff;">SMART FOX AR</h1>
+        <p>Натисніть кнопку та наведіть камеру на маркер</p>
         <button onclick="startExperience()">Запустити AR</button>
     </div>
 
-    <div id="status-indicator">Очікування активації...</div>
+    <div id="status-indicator" style="display:none">Пошук маркера...</div>
 
     <div class="ui-panel">
         <button id="audioBtn">🔊 Звук</button>
@@ -62,7 +55,7 @@
     <a-scene 
         mindar-image="imageTargetSrc: assets/targets.mind; autoStart: false; uiScanning: #status-indicator; filterMinCF:0.0001; filterBeta: 0.001;" 
         embedded color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true" 
+        renderer="colorManagement: true, antialias: true" 
         vr-mode-ui="enabled: false" 
         device-orientation-permission-ui="enabled: false">
         
@@ -79,19 +72,17 @@
             <a-entity 
                 id="hologram-mesh"
                 geometry="primitive: plane; width: 1; height: 1.5" 
-                scale="10 10 10" 
-                position="0 7.5 0" 
+                position="0 0.75 0" 
                 material="shader: transparent-video; src: #hologramVideo; alphaMethod: mask; side: double;"
-                look-at="#main-camera">
+                look-at="#main-camera"
+                hologram-flicker>
             </a-entity>
-            
-            <a-light type="point" color="#00ffff" intensity="1" position="0 1 2"></a-light>
+            <a-light type="point" color="#00ffff" intensity="1" position="0 1 1"></a-light>
         </a-entity>
 
     </a-scene>
 
     <script src="js/app.js"></script>
     <script src="js/ui-controller.js"></script>
-
 </body>
 </html>
