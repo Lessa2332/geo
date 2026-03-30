@@ -74,16 +74,18 @@
 
         <a-entity id="target-sensor" mindar-image-target="targetIndex: 0"></a-entity>
 
-        <a-entity id="world-anchor" visible="false">
-            <a-entity 
-                id="hologram-mesh"
-                geometry="primitive: plane; width: 1.0; height: 0.5" 
-                position="0 0 0.05" 
-                material="shader: transparent-video; src: #hologramVideo; side: double;"
-                hologram-flicker>
-            </a-entity>
-            <a-light type="point" color="#00ffff" intensity="0.8" position="0 0 0.5"></a-light>
-        </a-entity>
+<a-entity id="world-anchor" visible="false">
+    <a-entity 
+        id="hologram-mesh"
+        /* Зменшуємо висоту до 0.8 метра (80 см), щоб точно бачити її */
+        geometry="primitive: plane; width: 0.6; height: 0.8" 
+        /* Центруємо її над маркером */
+        position="0 0.4 0.1" 
+        material="shader: transparent-video; src: #hologramVideo;"
+        hologram-flicker>
+    </a-entity>
+    <a-light type="point" color="#00ffff" intensity="0.8" position="0 0.5 0.5"></a-light>
+</a-entity>
 
     </a-scene>
 
