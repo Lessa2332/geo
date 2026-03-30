@@ -3,65 +3,66 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta charset="UTF-8">
-    <title>WebAR Hologram 2026</title>
+    <title>WebAR Hologram Pro | 2026</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://raw.githack.com/mrxu0/aframe-transparent-video-shader/master/dist/aframe-transparent-video-shader.umd.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
 
     <style>
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000; }
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Roboto, sans-serif; background-color: #000; }
         
-        /* UI Інструкція */
+        /* Екран завантаження/інструкції */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); color: white;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 1000; text-align: center; transition: opacity 0.5s;
+            background: linear-gradient(135deg, #001a1a 0%, #000 100%);
+            color: white; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 1000; 
+            text-align: center; transition: opacity 0.5s ease;
         }
 
-        /* Панель керування */
-        .controls {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 15px; z-index: 1001;
+        /* Панель кнопок */
+        .ui-panel {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px; z-index: 1001;
         }
 
         button {
-            padding: 15px 25px; border-radius: 50px; border: 2px solid #00ffff;
-            background: rgba(0, 255, 255, 0.2); color: #00ffff; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; backdrop-filter: blur(5px);
-            transition: all 0.3s;
+            padding: 14px 28px; border-radius: 30px; border: 1px solid #00ffff;
+            background: rgba(0, 255, 255, 0.1); color: #00ffff; font-weight: 600;
+            text-transform: uppercase; cursor: pointer; backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3); transition: all 0.2s;
         }
 
-        button:active { transform: scale(0.9); background: #00ffff; color: #000; }
+        button:active { transform: scale(0.95); background: #00ffff; color: #000; }
 
-        #status-bar {
-            position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 255, 255, 0.1); color: #00ffff; padding: 5px 20px;
-            border-radius: 20px; font-size: 14px; z-index: 1001; display: none;
+        #status-indicator {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            color: #00ffff; font-size: 0.9rem; letter-spacing: 1px;
+            z-index: 1001; text-shadow: 0 0 5px #000;
         }
     </style>
 </head>
 <body>
 
     <div id="overlay">
-        <h2>WebAR Гід</h2>
-        <p>1. Надайте доступ до камери<br>2. Наведіть на зображення А5<br>3. Відійдіть на 1,5 метри для повного зросту</p>
-        <button onclick="startExperience()">Почати</button>
+        <h1 style="color: #00ffff; margin-bottom: 10px;">WEB AR HOLOGRAM</h1>
+        <p style="margin-bottom: 30px; line-height: 1.5;">Надайте доступ до камери та<br>наведіть на маркер для появи фігури.</p>
+        <button onclick="startExperience()">Запустити AR</button>
     </div>
 
-    <div id="status-bar">Пошук маркера...</div>
+    <div id="status-indicator">Очікування активації...</div>
 
-    <div class="controls">
+    <div class="ui-panel">
         <button id="audioBtn">🔊 Звук</button>
-        <button id="resetBtn">🔄 Переставити</button>
+        <button id="resetBtn">🔄 Reset</button>
     </div>
 
     <a-scene 
-        mindar-image="imageTargetSrc: assets/targets.mind; autoStart: false; filterMinCF:0.0001; filterBeta: 0.001;" 
+        mindar-image="imageTargetSrc: assets/targets.mind; autoStart: false; uiScanning: #status-indicator; filterMinCF:0.0001; filterBeta: 0.001;" 
         embedded color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights: true" 
+        renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true" 
         vr-mode-ui="enabled: false" 
         device-orientation-permission-ui="enabled: false">
         
@@ -84,68 +85,13 @@
                 look-at="#main-camera">
             </a-entity>
             
-            <a-light type="ambient" color="#00ffff" intensity="0.5"></a-light>
+            <a-light type="point" color="#00ffff" intensity="1" position="0 1 2"></a-light>
         </a-entity>
 
     </a-scene>
 
-    <script>
-        const sceneEl = document.querySelector('a-scene');
-        const targetEl = document.querySelector('#target-sensor');
-        const anchorEl = document.querySelector('#world-anchor');
-        const video = document.querySelector('#hologramVideo');
-        const audioBtn = document.querySelector('#audioBtn');
-        const resetBtn = document.querySelector('#resetBtn');
-        const statusBar = document.querySelector('#status-bar');
-        const overlay = document.querySelector('#overlay');
+    <script src="js/app.js"></script>
+    <script src="js/ui-controller.js"></script>
 
-        let isFixed = false;
-
-        // Функція запуску після кліку (вимога браузерів для камери/звуку)
-        function startExperience() {
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.style.display = 'none', 500);
-            sceneEl.systems['mindar-image-system'].start();
-            statusBar.style.display = 'block';
-        }
-
-        // Логіка детекції та фіксації
-        targetEl.addEventListener("targetFound", () => {
-            if (!isFixed) {
-                const worldPos = new THREE.Vector3();
-                targetEl.object3D.getWorldPosition(worldPos);
-                
-                anchorEl.object3D.position.copy(worldPos);
-                anchorEl.setAttribute('visible', 'true');
-                
-                video.play();
-                isFixed = true;
-                statusBar.innerText = "Голограма зафіксована";
-                setTimeout(() => statusBar.style.display = 'none', 3000);
-            }
-        });
-
-        // Кнопка Reset (дозволяє змінити позицію)
-        resetBtn.addEventListener('click', () => {
-            isFixed = false;
-            anchorEl.setAttribute('visible', 'false');
-            statusBar.style.display = 'block';
-            statusBar.innerText = "Знову знайдіть маркер";
-            video.pause();
-        });
-
-        // Керівання звуком
-        audioBtn.addEventListener('click', () => {
-            video.muted = !video.muted;
-            audioBtn.innerText = video.muted ? "🔊 Звук" : "🔇 Вимкнути";
-            // Якщо браузер блокував аудіо, play() після кліку розблокує його
-            video.play();
-        });
-
-        // Перевірка втрати маркера (для статусу)
-        targetEl.addEventListener("targetLost", () => {
-            if (!isFixed) statusBar.innerText = "Маркер втрачено...";
-        });
-    </script>
 </body>
 </html>
