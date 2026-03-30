@@ -2,34 +2,29 @@ const sceneEl = document.querySelector('a-scene');
 const targetEl = document.querySelector('#target-sensor');
 const anchorEl = document.querySelector('#world-anchor');
 const video = document.querySelector('#hologramVideo');
-const statusIndicator = document.querySelector('#status-indicator');
-
-let isFixed = false;
 
 window.startExperience = () => {
-    document.querySelector('#overlay').style.opacity = '0';
-    setTimeout(() => {
-        document.querySelector('#overlay').style.display = 'none';
-        statusIndicator.style.display = 'block';
-    }, 500);
-    sceneEl.systems['mindar-image-system'].start();
+    document.querySelector('#overlay').style.display = 'none';
+    
+    // Запуск системи MindAR з налаштуванням задньої камери
+    const mindarSystem = sceneEl.systems['mindar-image-system'];
+    
+    // Явно вказуємо використовувати задню камеру через обмеження медіа
+    const constraints = {
+        video: { facingMode: "environment" }
+    };
+
+    mindarSystem.start(); 
 };
 
 targetEl.addEventListener("targetFound", () => {
-    if (!isFixed) {
-        anchorEl.setAttribute('visible', 'true');
-        video.play();
-        isFixed = true;
-        statusIndicator.innerText = "Лисиця на стіні!";
-        setTimeout(() => { statusIndicator.style.display = 'none'; }, 2000);
-    }
+    anchorEl.setAttribute('visible', 'true');
+    // Примусовий запуск відео при виявленні
+    video.play().catch(e => console.log("Чекаємо на клік користувача для звуку"));
 });
 
 window.resetHologram = () => {
-    isFixed = false;
     anchorEl.setAttribute('visible', 'false');
     video.pause();
     video.currentTime = 0;
-    statusIndicator.style.display = 'block';
-    statusIndicator.innerText = "Шукаю маркер...";
 };
