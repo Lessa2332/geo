@@ -14,14 +14,10 @@
     <style>
         body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000; }
         
-        /* Виправлення відображення камери на весь екран */
+        /* Розтягуємо камеру на весь екран без чорних смуг */
         video {
-            width: 100vw !important;
-            height: 100vh !important;
-            object-fit: cover !important;
-            position: absolute;
-            top: 0;
-            left: 0;
+            width: 100vw !important; height: 100vh !important;
+            object-fit: cover !important; position: absolute; top: 0; left: 0;
         }
 
         #overlay {
@@ -31,33 +27,27 @@
             justify-content: center; align-items: center; z-index: 1000; 
             text-align: center; transition: opacity 0.5s ease;
         }
-
         .ui-panel {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 20px; z-index: 1001;
         }
-
         button {
             padding: 14px 28px; border-radius: 30px; border: 1px solid #00ffff;
             background: rgba(0, 255, 255, 0.1); color: #00ffff; font-weight: 600;
             text-transform: uppercase; cursor: pointer; backdrop-filter: blur(10px);
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.3); transition: all 0.2s;
         }
-
         #status-indicator {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             color: #00ffff; font-size: 0.9rem; z-index: 1001; text-shadow: 0 0 5px #000;
         }
-
-        /* Оверлей сканування MindAR */
-        .mindar-ui-scanning { z-index: 1002; }
     </style>
 </head>
 <body>
 
     <div id="overlay">
         <h1 style="color: #00ffff;">SMART FOX AR</h1>
-        <p>Надайте доступ до камери та наведіть на маркер</p>
+        <p>Натисніть кнопку та наведіть на маркер на стіні</p>
         <button onclick="startExperience()">Запустити AR</button>
     </div>
 
@@ -69,7 +59,7 @@
     </div>
 
     <a-scene 
-        mindar-image="imageTargetSrc: assets/targets.mind; autoStart: false; uiScanning: #status-indicator; filterMinCF:0.0001; filterBeta: 0.001; uiLoading: no; facingMode: environment;" 
+        mindar-image="imageTargetSrc: assets/targets.mind; autoStart: false; uiScanning: #status-indicator; facingMode: environment;" 
         embedded color-space="sRGB" 
         renderer="colorManagement: true, antialias: true" 
         vr-mode-ui="enabled: false" 
@@ -87,14 +77,12 @@
         <a-entity id="world-anchor" visible="false">
             <a-entity 
                 id="hologram-mesh"
-                geometry="primitive: plane; width: 1; height: 1.5" 
-                position="0 0.75 0" 
+                geometry="primitive: plane; width: 1.0; height: 1.5" 
+                position="0 0 0.05" 
                 material="shader: transparent-video; src: #hologramVideo; side: double;"
-                look-at="#main-camera"
                 hologram-flicker>
             </a-entity>
-            
-            <a-light type="point" color="#00ffff" intensity="0.8" position="0 1 1"></a-light>
+            <a-light type="point" color="#00ffff" intensity="0.8" position="0 0 0.5"></a-light>
         </a-entity>
 
     </a-scene>
