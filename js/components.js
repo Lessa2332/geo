@@ -1,14 +1,20 @@
 AFRAME.registerShader('transparent-video', {
-  schema: { src: {type: 'map'} },
+  schema: {
+    src: {type: 'map'}
+  },
   init: function (data) {
     const videoEl = document.querySelector('#hologramVideo');
-    if (!videoEl) return;
-
+    
+    // Створюємо текстуру напряму з елемента
     this.texture = new THREE.VideoTexture(videoEl);
     this.texture.format = THREE.RGBAFormat;
-    
+    this.texture.minFilter = THREE.LinearFilter;
+    this.texture.magFilter = THREE.LinearFilter;
+
     this.material = new THREE.ShaderMaterial({
-      uniforms: { texture: {value: this.texture} },
+      uniforms: {
+        texture: { value: this.texture }
+      },
       vertexShader: `
         varying vec2 vUv;
         void main() {
@@ -21,6 +27,7 @@ AFRAME.registerShader('transparent-video', {
         uniform sampler2D texture;
         void main() {
           vec2 uv = vUv;
+          // Ліва половина - RGB, права - Alpha
           vec4 color = texture2D(texture, vec2(uv.x * 0.5, uv.y));
           float alpha = texture2D(texture, vec2(0.5 + uv.x * 0.5, uv.y)).r;
           gl_FragColor = vec4(color.rgb, alpha);
@@ -30,8 +37,11 @@ AFRAME.registerShader('transparent-video', {
       side: THREE.DoubleSide
     });
   },
-  update: function (data) {
-    if (this.texture) this.texture.image = data.src;
+  // Додаємо tick, щоб примусово оновлювати текстуру кожного кадру
+  tick: function () {
+    if (this.texture) {
+      this.texture.needsUpdate = true;
+    }
   }
 });
 
