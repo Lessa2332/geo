@@ -1,15 +1,14 @@
 AFRAME.registerShader('transparent-video', {
   schema: {
-    src: {type: 'map'}
+    src: { type: 'map' }
   },
-  init: function (data) {
-    const videoEl = document.querySelector('#hologramVideo');
-    
-    // Створюємо текстуру напряму з елемента
+  init: function(data) {
+    const videoEl = data.src; // A-Frame сам знайде елемент за ID
     this.texture = new THREE.VideoTexture(videoEl);
+    
+    // Новий стандарт для Three.js r164
+    this.texture.colorSpace = THREE.SRGBColorSpace; 
     this.texture.format = THREE.RGBAFormat;
-    this.texture.minFilter = THREE.LinearFilter;
-    this.texture.magFilter = THREE.LinearFilter;
 
     this.material = new THREE.ShaderMaterial({
       uniforms: {
@@ -27,7 +26,7 @@ AFRAME.registerShader('transparent-video', {
         uniform sampler2D texture;
         void main() {
           vec2 uv = vUv;
-          // Ліва половина - RGB, права - Alpha
+          // Ліва частина - колір, права - альфа-маска
           vec4 color = texture2D(texture, vec2(uv.x * 0.5, uv.y));
           float alpha = texture2D(texture, vec2(0.5 + uv.x * 0.5, uv.y)).r;
           gl_FragColor = vec4(color.rgb, alpha);
@@ -37,20 +36,7 @@ AFRAME.registerShader('transparent-video', {
       side: THREE.DoubleSide
     });
   },
-  // Додаємо tick, щоб примусово оновлювати текстуру кожного кадру
-  tick: function () {
-    if (this.texture) {
-      this.texture.needsUpdate = true;
-    }
-  }
-});
-
-AFRAME.registerComponent('hologram-flicker', {
-  tick: function () {
-    if (Math.random() > 0.96) {
-      this.el.setAttribute('opacity', Math.random() * 0.5 + 0.3);
-    } else {
-      this.el.setAttribute('opacity', 0.9);
-    }
+  tick: function() {
+    if (this.texture) this.texture.needsUpdate = true;
   }
 });
