@@ -3,29 +3,47 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta charset="UTF-8">
-    <title>Смарт Лисиця AR</title>
+    <title>Смарт Лисиця AR | Тест Картинки</title>
 
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-    
+
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; font-family: sans-serif; }
-        video { width: 100vw !important; height: 100vh !important; object-fit: cover !important; position: absolute; top: 0; left: 0; }
-        #overlay { position: fixed; inset: 0; background: #000; color: #0ff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; }
-        .ui-panel { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 1001; }
-        button { padding: 12px 24px; border: 2px solid #0ff; background: rgba(0,255,255,0.1); color: #0ff; border-radius: 25px; cursor: pointer; }
+        
+        /* Камера на весь екран */
+        video { 
+            width: 100vw !important; height: 100vh !important; 
+            object-fit: cover !important; position: absolute; top: 0; left: 0; 
+        }
+
+        #overlay {
+            position: fixed; inset: 0; background: #001a1a;
+            color: #0ff; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 1000; text-align: center;
+        }
+
+        button {
+            padding: 15px 30px; border: 2px solid #0ff; background: rgba(0,255,255,0.1);
+            color: #0ff; border-radius: 30px; cursor: pointer; font-weight: bold;
+            font-size: 1.2rem; text-transform: uppercase;
+        }
+
+        #debug-log {
+            position: fixed; top: 10px; left: 10px; color: white; 
+            background: rgba(0,0,0,0.5); font-size: 10px; z-index: 2000;
+            pointer-events: none; padding: 5px;
+        }
     </style>
 </head>
 <body>
 
+    <div id="debug-log">Статус: Очікування запуску...</div>
+
     <div id="overlay">
         <h1>SMART FOX AR</h1>
-        <p>Натисніть кнопку та наведіть на маркер на стіні</p>
+        <p>Тест статичного зображення</p>
         <button onclick="startExperience()">ЗАПУСТИТИ</button>
-    </div>
-
-    <div class="ui-panel">
-        <button id="resetBtn">🔄 Reset</button>
     </div>
 
     <a-scene 
@@ -34,7 +52,7 @@
         renderer="colorManagement: true, antialias: true">
         
         <a-assets>
-            <img id="hologramImage" src="assets/fox_ar.png" crossorigin="anonymous">
+            <img id="foxCard" src="assets/fox_ar.png" crossorigin="anonymous">
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -43,39 +61,40 @@
             <a-entity id="world-anchor" visible="false">
                 
                 <a-entity 
-                    id="hologram-mesh"
-                    geometry="primitive: plane; width: 0.5; height: 0.75" 
+                    id="fox-mesh"
+                    geometry="primitive: plane; width: 0.6; height: 0.6" 
                     position="0 0 0.15" 
-                    /* Стандартний матеріал A-Frame для прозорості (без шейдерів) */
-                    material="src: #hologramImage; transparent: true; opacity: 1; alphaTest: 0.5; side: double;">
+                    material="src: #foxCard; transparent: true; alphaTest: 0.5; side: double;">
                 </a-entity>
-                
-                <a-light type="point" color="#00ffff" intensity="1.2" position="0 0 0.4"></a-light>
+
+                <a-light type="point" color="#0ff" intensity="1" position="0 0 0.5"></a-light>
                 
             </a-entity>
         </a-entity>
     </a-scene>
 
     <script>
-        const sceneEl = document.querySelector('a-scene');
-        const targetEl = document.querySelector('#target-sensor');
-        const anchorEl = document.querySelector('#world-anchor');
+        const log = document.getElementById('debug-log');
+        const anchor = document.getElementById('world-anchor');
+        const sensor = document.getElementById('target-sensor');
 
-        window.startExperience = () => {
-            document.querySelector('#overlay').style.display = 'none';
-            sceneEl.systems['mindar-image-system'].start(); 
-        };
+        function startExperience() {
+            document.getElementById('overlay').style.display = 'none';
+            log.innerText = "Статус: Камера активна. Шукаю маркер...";
+            
+            // Запуск MindAR
+            const sceneEl = document.querySelector('a-scene');
+            sceneEl.systems['mindar-image-system'].start();
+        }
 
-        targetEl.addEventListener("targetFound", () => {
-            anchorEl.setAttribute('visible', 'true');
+        // Події маркера
+        sensor.addEventListener("targetFound", () => {
+            log.innerText = "Статус: Маркер ЗНАЙДЕНО!";
+            anchor.setAttribute('visible', 'true');
         });
 
-        targetEl.addEventListener("targetLost", () => {
-            // Лисиця залишається на стіні
-        });
-
-        document.querySelector('#resetBtn').addEventListener('click', () => {
-            anchorEl.setAttribute('visible', 'false');
+        sensor.addEventListener("targetLost", () => {
+            log.innerText = "Статус: Маркер втрачено (Лисиця залишається)";
         });
     </script>
 </body>
