@@ -5,9 +5,11 @@ AFRAME.registerShader('transparent-video', {
   init: function(data) {
     const videoEl = data.src;
     
-    // Створюємо текстуру з відео
+    // Створюємо відео-текстуру
     this.texture = new THREE.VideoTexture(videoEl);
-    this.texture.colorSpace = THREE.SRGBColorSpace; // Стандарт r164
+    
+    // Новий стандарт колірного простору для r164
+    this.texture.colorSpace = THREE.SRGBColorSpace; 
     this.texture.minFilter = THREE.LinearFilter;
     this.texture.magFilter = THREE.LinearFilter;
     this.texture.format = THREE.RGBAFormat;
@@ -24,15 +26,18 @@ AFRAME.registerShader('transparent-video', {
         }
       `,
       fragmentShader: `
-        precision highp float; // Обов'язково для WebGL2 у нових версіях
-        varying vec2 vUv;
+        precision highp float; // КРИТИЧНО: вказуємо точність для мобільних GPU
+        
         uniform sampler2D texture;
+        varying vec2 vUv;
+        
         void main() {
           vec2 uv = vUv;
-          // Ліва частина кадру (0.0 - 0.5) - це колір (RGB)
+          // Ліва половина (0.0 - 0.5) — RGB
           vec4 color = texture2D(texture, vec2(uv.x * 0.5, uv.y));
-          // Права частина кадру (0.5 - 1.0) - це маска (Alpha)
+          // Права половина (0.5 - 1.0) — Маска (Alpha)
           float alpha = texture2D(texture, vec2(0.5 + uv.x * 0.5, uv.y)).r;
+          
           gl_FragColor = vec4(color.rgb, alpha);
         }
       `,
@@ -40,6 +45,8 @@ AFRAME.registerShader('transparent-video', {
       side: THREE.DoubleSide
     });
   },
+  
+  // Примусове оновлення кожного кадру (важливо для відео)
   tick: function() {
     if (this.texture) {
       this.texture.needsUpdate = true;
