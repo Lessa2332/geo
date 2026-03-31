@@ -3,11 +3,13 @@ AFRAME.registerShader('transparent-video', {
     src: { type: 'map' }
   },
   init: function(data) {
-    const videoEl = data.src; // A-Frame сам знайде елемент за ID
-    this.texture = new THREE.VideoTexture(videoEl);
+    const videoEl = data.src;
     
-    // Новий стандарт для Three.js r164
-    this.texture.colorSpace = THREE.SRGBColorSpace; 
+    // Створюємо текстуру з відео
+    this.texture = new THREE.VideoTexture(videoEl);
+    this.texture.colorSpace = THREE.SRGBColorSpace; // Стандарт r164
+    this.texture.minFilter = THREE.LinearFilter;
+    this.texture.magFilter = THREE.LinearFilter;
     this.texture.format = THREE.RGBAFormat;
 
     this.material = new THREE.ShaderMaterial({
@@ -22,12 +24,14 @@ AFRAME.registerShader('transparent-video', {
         }
       `,
       fragmentShader: `
+        precision highp float; // Обов'язково для WebGL2 у нових версіях
         varying vec2 vUv;
         uniform sampler2D texture;
         void main() {
           vec2 uv = vUv;
-          // Ліва частина - колір, права - альфа-маска
+          // Ліва частина кадру (0.0 - 0.5) - це колір (RGB)
           vec4 color = texture2D(texture, vec2(uv.x * 0.5, uv.y));
+          // Права частина кадру (0.5 - 1.0) - це маска (Alpha)
           float alpha = texture2D(texture, vec2(0.5 + uv.x * 0.5, uv.y)).r;
           gl_FragColor = vec4(color.rgb, alpha);
         }
@@ -37,6 +41,8 @@ AFRAME.registerShader('transparent-video', {
     });
   },
   tick: function() {
-    if (this.texture) this.texture.needsUpdate = true;
+    if (this.texture) {
+      this.texture.needsUpdate = true;
+    }
   }
 });
